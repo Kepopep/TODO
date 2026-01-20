@@ -40,23 +40,19 @@ export function HabitItem({ habit, onRenameSave }: Props) {
         <div className='loader'/>
       ) : isEditing ? (
         <>
-          < HabitCheackbox onClick={(isCliced) => console.log(isCliced)} />
-          {/* <input
+          <input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
           <button className="habit-item-button" onClick={saveEdit}>✔️</button>
-          <button className="habit-item-button" onClick={cancelEdit}>❌</button> */}
+          <button className="habit-item-button" onClick={cancelEdit}>❌</button>
         </>
       ) : (
         <>
+          <HabitCheackbox onClick={(isCliced) => console.log(isCliced)} />
           <span className="habit-icon">🌿</span>
           <span className="habit-name">{habit.name}</span>
-          <button className="habit-toggle" aria-pressed="true">
-            <span className="checkmark">✓</span>
-          </button>
-          <button className="habit-item-button" onClick={startEdit}>✅</button>
           <button className="habit-item-button" onClick={startEdit}>⋯</button>
         </>
       )}
