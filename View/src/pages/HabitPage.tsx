@@ -1,9 +1,10 @@
-import "../components/HabitList/HabitList.css";
-import "../components/HabitList/HabitItem.css";
+import "../components/style/HabitList.css";
+import "../components/style/HabitItem.css";
+import '../components/style/HabitCheackbox.css'
 
 import { useEffect, useState } from "react";
 import { createHabit, getHabits, updateHabitName} from "../api/habits/habits.api";
-import { HabitList } from "../components/HabitList/HabitList";
+import { HabitList } from "../components/HabitList";
 
 import type { HabitDto, HabitRenameRequest } from "../api/habits/habits.types";
 

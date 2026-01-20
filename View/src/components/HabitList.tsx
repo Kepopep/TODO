@@ -1,4 +1,4 @@
-import type { HabitDto, HabitRenameRequest } from "../../api/habits/habits.types";
+import type { HabitDto, HabitRenameRequest } from "../api/habits/habits.types";
 import { HabitItem } from "./HabitItem";
 
 type Props = {
