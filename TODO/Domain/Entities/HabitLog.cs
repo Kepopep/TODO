@@ -14,8 +14,11 @@ public class HabitLog
         
     }
     
-    public HabitLog(Guid dtoHabitId, Guid userId, DateOnly dtoDate)
+    public HabitLog(Guid habitId, Guid userId, DateOnly date)
     {
-        
+        Id = Guid.NewGuid();
+        HabitId = habitId;
+        UserId = userId;
+        Date = date;
     }
 }

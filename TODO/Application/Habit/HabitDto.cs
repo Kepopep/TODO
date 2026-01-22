@@ -6,4 +6,5 @@ public record HabitDto(
     Guid Id, 
     Guid UserId, 
     string Name,
-    Frequency Frequency);
+    Frequency Frequency,
+    bool IsChecked = false);

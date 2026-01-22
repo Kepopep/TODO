@@ -3,10 +3,10 @@ import "../components/style/HabitItem.css";
 import '../components/style/HabitCheackbox.css'
 
 import { useEffect, useState } from "react";
-import { createHabit, getHabits, updateHabitName} from "../api/habits/habits.api";
+import { checkHabit, createHabit, getHabits, updateHabitName} from "../api/habits/habits.api";
 import { HabitList } from "../components/HabitList";
 
-import type { HabitDto, HabitRenameRequest } from "../api/habits/habits.types";
+import type { HabitDto, HabitRenameRequest, HabitCheckRequest } from "../api/habits/habits.types";
 
 export function HabitPage() {
     const [habits, setHabits] = useState<HabitDto[]>([]); 
@@ -47,11 +47,25 @@ export function HabitPage() {
         await loadHabits();
     }
 
+    const habitChecked = async (habitId: string, isActive: boolean) => {
+        try {
+            await checkHabit({
+                id: habitId,
+                isChecked: isActive
+            });
+
+            await loadHabits();
+        } catch (error) {
+            console.error('Failed to update habit check status:', error);
+            // Optionally refresh the habits list to revert any optimistic UI updates
+        }
+    };
+
     if(isLoading) 
         return <div>Loading...</div>
 
     if(error)
         return <div>{error}</div>
 
-    return <HabitList habits={habits} onAddClick={addHabit} onRenameSave={updateName}/>
+    return <HabitList habits={habits} onAddClick={addHabit} onRenameSave={updateName} onChecked={habitChecked}/>
 }

@@ -5,54 +5,56 @@ import { HabitEdit } from './HabitEdit';
 
 type Props = {
   habit: HabitDto;
+  isEditing?: boolean;
+  onEditStart?: () => void;
+  onEditEnd?: () => void;
   onRenameSave: (renameRequest: HabitRenameRequest) => void;
+  onChecked: (habitId: string, isActive: boolean) => void;
 };
 
-export function HabitItem({ habit, onRenameSave }: Props) {
-
-  const [isEditing, setIsEditing] = useState(false);
+export function HabitItem({ habit, isEditing = false, onEditStart, onEditEnd, onRenameSave, onChecked}: Props) {
   const [isUpdating, setIsUpdating] = useState(false);
-  const [isComplete, setIsComplete] = useState(false);
-  const [name, setName] = useState(habit.name);
-
-  function startEdit() {
-    setIsEditing(true);
-  }
-
-  function cancelEdit() {
-    setIsEditing(false);
-    setName(habit.name);
-  }
-
-  async function saveEdit() {
-    setIsUpdating(true);
-    await onRenameSave({
-      id: habit.id,
-      name: name,
-      frequency: habit.frequency
-    });
-    setIsUpdating(false);
-    setIsEditing(false);
-  }
 
   return (
     <li className="habit-item">
       {isUpdating ? (
         <div className='loader'/>
       ) : isEditing ? (
-        <HabitEdit 
-          initialValue = {name}
-          onSave={(name) => {
+        <HabitEdit
+          initialValue = {habit.name}
+          onSave={async (name) => {
             console.log(name);
-            setIsEditing(false);
+
+            setIsUpdating(true);
+            await onRenameSave({
+              id: habit.id,
+              name: name,
+              frequency: habit.frequency
+            });
+            setIsUpdating(false);
+
+            if (onEditEnd) {
+              onEditEnd();
+            }
           }}
-          onCancel={() => setIsEditing(false)}/>
+          onCancel={() => {
+            if (onEditEnd) {
+              onEditEnd();
+            }
+          }}/>
       ) : (
         <>
-          <HabitCheackbox onClick={(isCliced) => console.log(isCliced)} />
+          <HabitCheackbox 
+            habitId={habit.id} 
+            initialChecked={habit.isChecked} 
+            onCheckChange={(checked) => onChecked(habit.id, checked)}/>
           <span className="habit-icon">🌿</span>
           <span className="habit-name">{habit.name}</span>
-          <button className="habit-item-button" onClick={startEdit}>⋯</button>
+          <button className="habit-item-button" onClick={() => {
+            if (onEditStart) {
+              onEditStart();
+            }
+          }}>⋯</button>
         </>
       )}
       </li>);

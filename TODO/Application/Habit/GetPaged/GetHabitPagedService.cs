@@ -40,13 +40,28 @@ public class GetHabitPagedService : IGetHabitPagedService
         if (hasNextPage)
             habits.RemoveAt(habits.Count - 1);
 
+        var habitsId = habits
+            .Select(h => h.Id)
+            .ToList();
+
+        var completedHabitsIds = await _dbContext.HabitLogs
+            .AsNoTracking()
+            .Where(l => l.UserId == dto.UserId && 
+                habitsId.Contains(l.HabitId))
+            .Select(h => h.HabitId)
+            .Distinct()
+            .ToListAsync();
+
+        var completedSet = completedHabitsIds.ToHashSet();
+        
         // Шаг 5. Маппинг
         var items = habits.Select(h =>
                 new HabitDto(
                     h.Id,
                     h.UserId,
                     h.Name,
-                    h.Frequency))
+                    h.Frequency, 
+                    completedSet.Contains(h.Id)))
             .ToList();
 
         // Шаг 6. Результат

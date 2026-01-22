@@ -1,4 +1,4 @@
-import type { HabitCreateRequest, HabitDto, HabitRenameRequest } from './habits.types';
+import type { HabitCheckRequest, HabitCreateRequest, HabitDto, HabitRenameRequest } from './habits.types';
 
 export async function getHabits() : Promise<HabitDto[]> {
     const response = await fetch(`/api/habits?${{
@@ -49,5 +49,21 @@ export async function updateHabitName(renameRequest: HabitRenameRequest) {
 
     if(response.ok === false) {
         throw new Error('Failed to update habit');
+    }
+}
+
+export async function checkHabit(habitCheckRequest: HabitCheckRequest) {
+    const response = await fetch(`/api/habits/${habitCheckRequest.id}/check`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            isChecked: habitCheckRequest.isChecked
+        })
+    });
+
+    if (!response.ok) {
+        throw new Error('Failed to update habit check status');
     }
 }

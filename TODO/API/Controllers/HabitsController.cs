@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using TODO.API.Requests;
 using TODO.Application;
 using TODO.Application.Habit;
+using TODO.Application.Habit.Check;
 using TODO.Application.Habit.Create;
 using TODO.Application.Habit.Delete;
 using TODO.Application.Habit.GetById;
@@ -19,19 +20,22 @@ public class HabitsController : ControllerBase
     private readonly IGetHabitPagedService _getHabitPagedService;
     private readonly IUpdateHabitService _updateHabitService;
     private readonly IDeleteHabitService _deleteHabitService;
+    private readonly ICheckHabitService _checkHabitStatusService;
 
     public HabitsController(
         ICreateHabitService createHabitService,
         IGetHabitByIdService getHabitByIdService,
         IGetHabitPagedService getHabitPagedService,
         IUpdateHabitService updateHabitService,
-        IDeleteHabitService deleteHabitService)
+        IDeleteHabitService deleteHabitService,
+        ICheckHabitService checkHabitStatusService)
     {
         _createHabitService = createHabitService;
         _getHabitByIdService = getHabitByIdService;
         _getHabitPagedService = getHabitPagedService;
         _updateHabitService = updateHabitService;
         _deleteHabitService = deleteHabitService;
+        _checkHabitStatusService = checkHabitStatusService;
     }
 
     /// <summary>
@@ -136,6 +140,27 @@ public class HabitsController : ControllerBase
         var dto = new DeleteHabitServiceDto(userId, id);
 
         await _deleteHabitService.ExecuteAsync(dto);
+
+        return NoContent();
+    }
+
+    /// <summary>
+    /// Проверяет или отменяет выполнение привычки на текущую дату
+    /// </summary>
+    [HttpPut("{habitId:guid}/check")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> CheckStatus(Guid habitId, [FromBody] CheckHabitRequest request)
+    {
+        // var userIdString = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        // if (string.IsNullOrEmpty(userIdString) || !Guid.TryParse(userIdString, out var userId))
+        // {
+        //     return Unauthorized();
+        // }
+
+        var olegId = "d82b825f-40c3-4262-b367-55db930f0dc5";
+        var dto = new CheckHabitDto(Guid.Parse(olegId), habitId, request.IsChecked);
+        await _checkHabitStatusService.ExecuteAsync(dto);
 
         return NoContent();
     }

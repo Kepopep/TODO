@@ -3,6 +3,7 @@ export type HabitDto = {
     userId: string;
     name: string;
     frequency: number;
+    isChecked: boolean;
 }
 
 export type HabitCreateRequest = { 
@@ -14,4 +15,9 @@ export type HabitRenameRequest = {
     id: string;
     name: string;
     frequency: number;
+}
+
+export type HabitCheckRequest = {
+    id: string;
+    isChecked: boolean;
 }
