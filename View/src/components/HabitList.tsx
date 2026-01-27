@@ -14,12 +14,9 @@ type Props = {
 export function HabitList({ habits, onAddClick, onRenameSave, onChecked, onDelete} : Props) {
     const [editingHabitId, setEditingHabitId] = useState<string | null>(null);
 
-    if(habits.length === 0)
-        return <div>No content</div>
-
     return (
         <div className="habit-list-wrapper">
-            <h3 className="habit-list-title">Habits</h3>
+            <h3 className="habit-list-title">Habits for {new Date().getDate()}.{new Date().getMonth()+1}</h3>
 
             <div className="habit-card">
                 <ul className="habit-list">
