@@ -21,6 +21,7 @@ public class HabitsController : ControllerBase
     private readonly IUpdateHabitService _updateHabitService;
     private readonly IDeleteHabitService _deleteHabitService;
     private readonly ICheckHabitService _checkHabitStatusService;
+    private readonly IUserContext _userContext;
 
     public HabitsController(
         ICreateHabitService createHabitService,
@@ -28,7 +29,8 @@ public class HabitsController : ControllerBase
         IGetHabitPagedService getHabitPagedService,
         IUpdateHabitService updateHabitService,
         IDeleteHabitService deleteHabitService,
-        ICheckHabitService checkHabitStatusService)
+        ICheckHabitService checkHabitStatusService,
+        IUserContext userContext)
     {
         _createHabitService = createHabitService;
         _getHabitByIdService = getHabitByIdService;
@@ -36,6 +38,7 @@ public class HabitsController : ControllerBase
         _updateHabitService = updateHabitService;
         _deleteHabitService = deleteHabitService;
         _checkHabitStatusService = checkHabitStatusService;
+        _userContext = userContext;
     }
 
     /// <summary>
@@ -45,14 +48,7 @@ public class HabitsController : ControllerBase
     [ProducesResponseType(typeof(HabitDto), StatusCodes.Status201Created)]
     public async Task<IActionResult> Create([FromBody] CreateHabitRequest request)
     {
-        // var userIdString = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-        // if (string.IsNullOrEmpty(userIdString) || !Guid.TryParse(userIdString, out var userId))
-        // {
-        //     return Unauthorized();
-        // }
-        
-        //var createRequest = new CreateHabitServiceDto(userId, request.Name, request.Frequency);
-        var createRequest = new CreateHabitServiceDto(Guid.Parse("d82b825f-40c3-4262-b367-55db930f0dc5"), request.Name, request.Frequency);
+        var createRequest = new CreateHabitServiceDto(_userContext.UserId, request.Name, request.Frequency);
         var habit = await _createHabitService.ExecuteAsync(createRequest);
 
         return CreatedAtAction(
@@ -69,13 +65,7 @@ public class HabitsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(Guid id)
     {
-        var userIdString = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-        if (string.IsNullOrEmpty(userIdString) || !Guid.TryParse(userIdString, out var userId))
-        {
-            return Unauthorized();
-        }
-        
-        var habit = await _getHabitByIdService.ExecuteAsync(new GetHabitByIdDto(userId, id));
+        var habit = await _getHabitByIdService.ExecuteAsync(new GetHabitByIdDto(_userContext.UserId, id));
 
         //TODO add not found exeption
 
@@ -89,14 +79,7 @@ public class HabitsController : ControllerBase
     [ProducesResponseType(typeof(PagedResult<HabitDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetPaged([FromQuery] GetHabitsPagedRequest request)
     {
-        var olegId = "d82b825f-40c3-4262-b367-55db930f0dc5";
-        //var userIdString = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-        //if (string.IsNullOrEmpty(userIdString) || !Guid.TryParse(userIdString, out var userId))
-        //{
-            //return Unauthorized();
-        //}
-        
-        var dto = new GetHabitPagedServiceDto(Guid.Parse(olegId), request.Page, request.PageSize, request.Date);
+        var dto = new GetHabitPagedServiceDto(_userContext.UserId, request.Page, request.PageSize, request.Date);
         var habits = await _getHabitPagedService.ExecuteAsync(dto);
 
         return Ok(habits);
@@ -110,14 +93,7 @@ public class HabitsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateHabitRequest request)
     {
-        // var userIdString = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-        // if (string.IsNullOrEmpty(userIdString) || !Guid.TryParse(userIdString, out var userId))
-        // {
-        //     return Unauthorized();
-        // }
-        
-        var olegId = "d82b825f-40c3-4262-b367-55db930f0dc5";
-        var updateDto = new UpdateHabitDto(Guid.Parse(olegId), id, request.Name, request.Frequency);
+        var updateDto = new UpdateHabitDto(_userContext.UserId, id, request.Name, request.Frequency);
         
         await _updateHabitService.ExecuteAsync(updateDto);
 
@@ -131,14 +107,7 @@ public class HabitsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> Delete(Guid id)
     {
-        // var userIdString = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-        // if (string.IsNullOrEmpty(userIdString) || !Guid.TryParse(userIdString, out var userId))
-        // {
-        //     return Unauthorized();
-        // }
-        
-        var olegId = "d82b825f-40c3-4262-b367-55db930f0dc5";
-        var dto = new DeleteHabitServiceDto(Guid.Parse(olegId), id);
+        var dto = new DeleteHabitServiceDto(_userContext.UserId, id);
 
         await _deleteHabitService.ExecuteAsync(dto);
 
@@ -153,14 +122,7 @@ public class HabitsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CheckStatus(Guid habitId, [FromBody] CheckHabitRequest request)
     {
-        // var userIdString = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-        // if (string.IsNullOrEmpty(userIdString) || !Guid.TryParse(userIdString, out var userId))
-        // {
-        //     return Unauthorized();
-        // }
-
-        var olegId = "d82b825f-40c3-4262-b367-55db930f0dc5";
-        var dto = new CheckHabitDto(Guid.Parse(olegId), habitId, request.Date, request.IsChecked);
+        var dto = new CheckHabitDto(_userContext.UserId, habitId, request.Date, request.IsChecked);
         await _checkHabitStatusService.ExecuteAsync(dto);
 
         return NoContent();

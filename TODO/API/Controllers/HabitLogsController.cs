@@ -20,6 +20,7 @@ public class HabitLogsController : ControllerBase
     private readonly IGetHabitLogByDayService _getHabitLogByDayService;
     private readonly IDeleteHabitLogService _deleteHabitLogService;
     private readonly IUpdateHabitLogService _updateHabitLogService;
+    private readonly IUserContext _userContext;
 
     public HabitLogsController(
         ICreateHabitLogService createHabitLogService,
@@ -27,7 +28,8 @@ public class HabitLogsController : ControllerBase
         IGetHabitLogPagedService getHabitLogPagedService,
         IGetHabitLogByDayService getHabitLogByDayService,
         IDeleteHabitLogService deleteHabitLogService,
-        IUpdateHabitLogService updateHabitLogService)
+        IUpdateHabitLogService updateHabitLogService,
+        IUserContext userContext)
     {
         _createHabitLogService = createHabitLogService;
         _getHabitLogByIdService = getHabitLogByIdService;
@@ -35,6 +37,7 @@ public class HabitLogsController : ControllerBase
         _getHabitLogByDayService = getHabitLogByDayService;
         _deleteHabitLogService = deleteHabitLogService;
         _updateHabitLogService = updateHabitLogService;
+        _userContext = userContext;
     }
 
     /// <summary>
@@ -45,14 +48,8 @@ public class HabitLogsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create([FromBody] CreateHabitLogRequest request)
     {
-        var userIdString = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-        if (string.IsNullOrEmpty(userIdString) || !Guid.TryParse(userIdString, out var userId))
-        {
-            return Unauthorized();
-        }
-
         var createDto = new CreateHabitLogDto(request.HabitId, request.Date);
-        var habitLog = await _createHabitLogService.ExecuteAsync(userId, createDto);
+        var habitLog = await _createHabitLogService.ExecuteAsync(_userContext.UserId, createDto);
 
         return CreatedAtAction(
             nameof(GetById),
@@ -85,13 +82,7 @@ public class HabitLogsController : ControllerBase
     [ProducesResponseType(typeof(HabitLogDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetPaged([FromQuery]GetHabitLogsPagedRequest request)
     {
-        var userIdString = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-        if (string.IsNullOrEmpty(userIdString) || !Guid.TryParse(userIdString, out var userId))
-        {
-            return Unauthorized();
-        }
-
-        var dto = new GetHabitLogPagedServiceDto(userId, request.Page, request.PageSize);
+        var dto = new GetHabitLogPagedServiceDto(_userContext.UserId, request.Page, request.PageSize);
         var habitLog = await _getHabitLogPagedService.ExecuteAsync(dto);
 
         return Ok(habitLog);
@@ -104,13 +95,7 @@ public class HabitLogsController : ControllerBase
     [ProducesResponseType(typeof(List<HabitLogDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetByDay(DateOnly date)
     {
-        var userIdString = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-        if (string.IsNullOrEmpty(userIdString) || !Guid.TryParse(userIdString, out var userId))
-        {
-            return Unauthorized();
-        }
-
-        var dto = new GetHabitLogByDayServiceDto(userId, date);
+        var dto = new GetHabitLogByDayServiceDto(_userContext.UserId, date);
         var habitLogs = await _getHabitLogByDayService.ExecuteAsync(dto);
 
         return Ok(habitLogs);
@@ -125,13 +110,7 @@ public class HabitLogsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateHabitLogRequest request)
     {
-        var userIdString = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-        if (string.IsNullOrEmpty(userIdString) || !Guid.TryParse(userIdString, out var userId))
-        {
-            return Unauthorized();
-        }
-
-        var dto = new UpdateHabitLogDto(userId, id, request.Date, request.HabitId);
+        var dto = new UpdateHabitLogDto(_userContext.UserId, id, request.Date, request.HabitId);
         await _updateHabitLogService.ExecuteAsync(dto);
 
         return NoContent();
@@ -146,13 +125,7 @@ public class HabitLogsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(Guid id)
     {
-        var userIdString = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-        if (string.IsNullOrEmpty(userIdString) || !Guid.TryParse(userIdString, out var userId))
-        {
-            return Unauthorized();
-        }
-
-        var dto = new DeleteHabitLogServiceDto(userId, id);
+        var dto = new DeleteHabitLogServiceDto(_userContext.UserId, id);
         await _deleteHabitLogService.ExecuteAsync(dto);
 
         return NoContent();

@@ -32,6 +32,8 @@ public class Program
         
         builder.Services.AddApplicationServices();
 
+        builder.Services.AddScoped<IUserContext, FakeUserContext>();
+
         builder.Services.AddAuthentication();
         builder.Services.AddAuthorization();
         
