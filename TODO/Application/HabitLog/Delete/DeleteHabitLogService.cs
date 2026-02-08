@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using TODO.Application.HabitLog.Create;
-using TODO.Domain;
+using TODO.Application.Exceptions;
 using TODO.Infrastructure;
 
 namespace TODO.Application.HabitLog.Delete;
@@ -24,7 +23,9 @@ public class DeleteHabitLogService : IDeleteHabitLogService
 
         // Шаг 2. Проверка существования и доступа
         if (habitLog is null)
+        {
             throw new DomainException("Habit completion not found");
+        }
 
         // Шаг 3. Удаление отметки
         _dbContext.HabitLogs.Remove(habitLog);

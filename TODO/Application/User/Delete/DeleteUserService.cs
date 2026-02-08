@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using TODO.Domain;
+using TODO.Application.Exceptions;
 using TODO.Domain.Entities;
 
 namespace TODO.Application.User.Delete;

@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using TODO.Domain;
+using TODO.Application.Exceptions;
 using TODO.Infrastructure;
 
 namespace TODO.Application.HabitLog.Update;
@@ -23,7 +23,9 @@ public class UpdateHabitLogService : IUpdateHabitLogService
 
         // Step 2. Check existence and access
         if (habitLog is null)
+        {
             throw new DomainException("Habit log not found");
+        }
 
         // Step 3. Verify that the habit exists and belongs to the user
         var habitExists = await _dbContext.Habits.AnyAsync(h =>
@@ -31,7 +33,9 @@ public class UpdateHabitLogService : IUpdateHabitLogService
             h.UserId == dto.UserId);
 
         if (!habitExists)
-            throw new KeyNotFoundException("Habit not found");
+        {
+            throw new NotFoundException("Habit not found");
+        }
 
         // Step 4. Check if a log for the same habit and date already exists for a different log entry
         var alreadyLogged = await _dbContext.HabitLogs.AnyAsync(l =>

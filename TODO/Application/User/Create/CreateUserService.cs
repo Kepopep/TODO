@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using TODO.Domain;
+using TODO.Application.Exceptions;
 using TODO.Domain.Entities;
 
 namespace TODO.Application.User.Create;
@@ -27,11 +27,7 @@ public class CreateUserService : ICreateUserService
 
         if (!result.Succeeded)
         {
-            var errors = string.Join(
-                "; ",
-                result.Errors.Select(e => e.Description));
-
-            throw new DomainException(errors);
+            throw new DomainException("Create user error");
         }
 
         return new UserDto(
