@@ -21,7 +21,6 @@ public class HabitsController : ControllerBase
     private readonly IUpdateHabitService _updateHabitService;
     private readonly IDeleteHabitService _deleteHabitService;
     private readonly ICheckHabitService _checkHabitStatusService;
-    private readonly IUserContext _userContext;
 
     public HabitsController(
         ICreateHabitService createHabitService,
@@ -29,8 +28,7 @@ public class HabitsController : ControllerBase
         IGetHabitPagedService getHabitPagedService,
         IUpdateHabitService updateHabitService,
         IDeleteHabitService deleteHabitService,
-        ICheckHabitService checkHabitStatusService,
-        IUserContext userContext)
+        ICheckHabitService checkHabitStatusService)
     {
         _createHabitService = createHabitService;
         _getHabitByIdService = getHabitByIdService;
@@ -38,7 +36,6 @@ public class HabitsController : ControllerBase
         _updateHabitService = updateHabitService;
         _deleteHabitService = deleteHabitService;
         _checkHabitStatusService = checkHabitStatusService;
-        _userContext = userContext;
     }
 
     /// <summary>
