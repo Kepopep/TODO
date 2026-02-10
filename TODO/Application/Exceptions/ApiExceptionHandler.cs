@@ -34,10 +34,10 @@ public class ApiExceptionHandler : IExceptionHandler
     {
         return exception switch
         {
-            DomainException => StatusCodes.Status400BadRequest,
             NotFoundException => StatusCodes.Status404NotFound,
             ValidationException => StatusCodes.Status404NotFound,
-            Exception => StatusCodes.Status500InternalServerError
+            DomainException => StatusCodes.Status409Conflict,
+            _ => StatusCodes.Status500InternalServerError
         };
     }
 }
