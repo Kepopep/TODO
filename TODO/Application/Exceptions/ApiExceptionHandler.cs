@@ -36,6 +36,7 @@ public class ApiExceptionHandler : IExceptionHandler
         {
             NotFoundException => StatusCodes.Status404NotFound,
             ValidationException => StatusCodes.Status404NotFound,
+            UnauthorizedException => StatusCodes.Status401Unauthorized,
             DomainException => StatusCodes.Status409Conflict,
             _ => StatusCodes.Status500InternalServerError
         };

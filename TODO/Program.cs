@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TODO.Application;
+using TODO.Application.Jwt.Factory;
 using TODO.Domain.Entities;
 using TODO.Infrastructure;
 
@@ -35,6 +36,7 @@ public class Program
         builder.Services.AddApplicationServices();
 
         builder.Services.AddScoped<IUserContext, FakeUserContext>();
+        builder.Services.AddScoped<IJwtTokenFactory, JwtTokenFactory>();
 
         builder.Services.AddAuthentication();
         builder.Services.AddAuthorization();
