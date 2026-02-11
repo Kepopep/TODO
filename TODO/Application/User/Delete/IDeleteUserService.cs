@@ -2,5 +2,5 @@
 
 public interface IDeleteUserService
 {
-    Task ExecuteAsync(DeleteUserServiceDto dto);
+    Task ExecuteAsync();
 }

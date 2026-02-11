@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using TODO.API.Requests;
 using TODO.Application.User;
 using TODO.Application.User.Create;
@@ -47,13 +48,10 @@ public class UsersController : Controller
     /// </summary>
     [HttpDelete("{id:guid}")]
     [ProducesResponseType(typeof(UserDto), StatusCodes.Status204NoContent)]
-    public async Task<IActionResult> Delete(Guid id)
+    [Authorize]
+    public async Task<IActionResult> Delete()
     {
-        // DTO use-case содержит только то,
-        // что действительно нужно для сценария
-        var dto = new DeleteUserServiceDto(id);
-
-        await _deleteUserService.ExecuteAsync(dto);
+        await _deleteUserService.ExecuteAsync();
 
         // Удаление ресурса → 204 No Content
         return NoContent();

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TODO.API.Requests;
 using TODO.Application;
@@ -13,6 +14,7 @@ namespace TODO.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class HabitsController : ControllerBase
 {
     private readonly ICreateHabitService _createHabitService;
