@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using TODO.Application.Exceptions;
 using TODO.Application.Jwt.Factory;
+using TODO.Application.User.Context;
 using TODO.Domain.Entities;
 
 namespace TODO.Application.User.Login;

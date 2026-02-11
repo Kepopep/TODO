@@ -1,6 +1,7 @@
 using TODO.Application.HabitLog.Create;
 using TODO.Application.HabitLog.Delete;
 using TODO.Application.HabitLog.GetDay;
+using TODO.Application.User.Context;
 
 namespace TODO.Application.Habit.Check;
 

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TODO.Application;
 using TODO.Application.Jwt.Factory;
+using TODO.Application.User.Context;
 using TODO.Domain.Entities;
 using TODO.Infrastructure;
 

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TODO.Application.Exceptions;
+using TODO.Application.User.Context;
 using TODO.Infrastructure;
 
 namespace TODO.Application.Habit.Delete;

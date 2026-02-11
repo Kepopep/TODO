@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TODO.Application.Exceptions;
 using TODO.Application.HabitLog.Create;
+using TODO.Application.User.Context;
 using TODO.Domain;
 using TODO.Infrastructure;
 
