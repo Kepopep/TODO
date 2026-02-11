@@ -1,5 +1,8 @@
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using TODO.Application;
 using TODO.Application.Jwt.Factory;
 using TODO.Application.User.Context;
@@ -16,33 +19,59 @@ public class Program
 
         builder.Services.AddProblemDetails();
         builder.Services.AddExceptionHandler<ApiExceptionHandler>();
-        // Add services to the container.
-        builder.Services.AddAuthorization();
 
-        // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
-        
-        builder.Services.AddDbContext<AppDbContext>(options => 
+
+        builder.Services.AddDbContext<AppDbContext>(options =>
             options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
-        builder.Services.AddDbContext<AppIdentityDbContext>(options => 
+        builder.Services.AddDbContext<AppIdentityDbContext>(options =>
             options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
-        
-        builder.Services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(options => {
-            options.User.RequireUniqueEmail = true;
-            options.Password.RequiredLength = 3;
-        }). AddEntityFrameworkStores<AppIdentityDbContext>().
-            AddDefaultTokenProviders();
-        
-        builder.Services.AddApplicationServices();
 
         builder.Services.AddScoped<IJwtTokenFactory, JwtTokenFactory>();
 
-        builder.Services.AddAuthentication();
+        builder.Services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(options =>
+        {
+            options.User.RequireUniqueEmail = true;
+            options.Password.RequiredLength = 3;
+        }).AddEntityFrameworkStores<AppIdentityDbContext>().
+            AddDefaultTokenProviders();
+
+        builder.Services.AddApplicationServices();
         builder.Services.AddHttpContextAccessor();
+
+        builder.Services
+            .AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                var jwtSection = builder.Configuration.GetSection("Jwt");
+                var secretKey = jwtSection["SecretKey"];
+
+                var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey!));
+
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+
+                    ValidIssuer = jwtSection["Issuer"],
+                    ValidAudience = jwtSection["Audience"],
+                    IssuerSigningKey = signingKey,
+
+                    ClockSkew = TimeSpan.Zero
+                };
+            });
+
+
         builder.Services.AddScoped<IUserContext, UserContext>();
         builder.Services.AddAuthorization();
-        
+
         builder.Services.AddControllers();
 
 
@@ -57,9 +86,11 @@ public class Program
 
         app.UseHttpsRedirection();
 
+        app.UseRouting();
+        app.UseAuthentication();
         app.UseAuthorization();
         app.MapControllers();
-        
+
         app.Run();
     }
 }
