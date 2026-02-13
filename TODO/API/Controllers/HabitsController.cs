@@ -93,7 +93,7 @@ public class HabitsController : ControllerBase
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateHabitRequest request)
     {
         var updateDto = new UpdateHabitDto(id, request.Name, request.Frequency);
-        
+
         await _updateHabitService.ExecuteAsync(updateDto);
 
         return NoContent();
