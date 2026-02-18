@@ -1,22 +1,24 @@
 using Microsoft.AspNetCore.Identity;
 using TODO.Application.Exceptions;
 using TODO.Application.Jwt.Factory;
+using TODO.Application.Refresh;
 using TODO.Application.User.Context;
 using TODO.Domain.Entities;
 
 namespace TODO.Application.User.Login;
 
-public class AuthService : IAuthService
+public class AuthService : IAccessTokenService
 {
-    private readonly IUserContext _context;
     private readonly UserManager<ApplicationUser> _manager;
-    private readonly IJwtTokenFactory _factory;
+    private readonly IAccessTokenFactory _accesFactory;
 
-    public AuthService(IUserContext context, UserManager<ApplicationUser> manager, IJwtTokenFactory factory)
+    private readonly IRefreshTokenService _refreshService;
+
+    public AuthService(UserManager<ApplicationUser> manager, IAccessTokenFactory factory, IRefreshTokenService refreshService)
     {
-        _context = context;
         _manager = manager;
-        _factory = factory;
+        _accesFactory = factory;
+        _refreshService = refreshService;
     }
 
     public async Task<string> Authenticate(AuthServiceDto dto)
@@ -26,10 +28,23 @@ public class AuthService : IAuthService
         if (user is null ||
             !await _manager.CheckPasswordAsync(user, dto.Password))
         {
-            // TODO: Return a more specific exception for unauthorized access
             throw new UnauthorizedException("Invalid credentials");
         }
 
-        return _factory.Create(user);
+        return _accesFactory.Create(user.Id.ToString(), dto.Email);
+    }
+
+    public async Task<string> Authenticate(string rawRefreshToken)
+    {
+        var userId = await _refreshService.ValidateAsync(rawRefreshToken);
+
+        var user = await _manager.FindByIdAsync(userId);
+
+        if (user is null)
+        {
+            throw new UnauthorizedException("Invalid credentials");
+        }
+
+        return _accesFactory.Create(userId, user.Email!);
     }
 }

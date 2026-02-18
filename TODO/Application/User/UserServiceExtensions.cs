@@ -11,8 +11,8 @@ public static class UserServiceExtensions
     {
         services.AddScoped<ICreateUserService, CreateUserService>();
         services.AddScoped<IDeleteUserService, DeleteUserService>();
-        services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IAccessTokenService, AuthService>();
 
         return services;
-    } 
+    }
 }

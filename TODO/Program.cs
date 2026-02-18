@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using TODO.Application;
 using TODO.Application.Jwt.Factory;
+using TODO.Application.Refresh;
 using TODO.Application.User.Context;
 using TODO.Domain.Entities;
 using TODO.Infrastructure;
@@ -29,7 +30,9 @@ public class Program
         builder.Services.AddDbContext<AppIdentityDbContext>(options =>
             options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-        builder.Services.AddScoped<IJwtTokenFactory, JwtTokenFactory>();
+        builder.Services.AddScoped<IAccessTokenFactory, AccessTokenFactory>();
+        builder.Services.AddScoped<IRefreshTokenFactory, RefreshTokenFactory>();
+        builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
 
         builder.Services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(options =>
         {

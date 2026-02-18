@@ -2,20 +2,19 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
-using TODO.Domain.Entities;
 
 namespace TODO.Application.Jwt.Factory;
 
-public class JwtTokenFactory : IJwtTokenFactory
+public class AccessTokenFactory : IAccessTokenFactory
 {
     private readonly IConfiguration _configuration;
 
-    public JwtTokenFactory(IConfiguration configuration)
+    public AccessTokenFactory(IConfiguration configuration)
     {
         _configuration = configuration;
     }
 
-    public string Create(ApplicationUser user)
+    public string Create(string id, string email)
     {
         var signingKey = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(_configuration["Jwt:SecretKey"]!));
@@ -25,8 +24,8 @@ public class JwtTokenFactory : IJwtTokenFactory
         var claims = new List<Claim>
         {
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-            new Claim(JwtRegisteredClaimNames.Email, user.Email!.ToString()),
+            new Claim(JwtRegisteredClaimNames.Sub, id),
+            new Claim(JwtRegisteredClaimNames.Email, email)
         };
 
         var tokenDescriptor = new SecurityTokenDescriptor

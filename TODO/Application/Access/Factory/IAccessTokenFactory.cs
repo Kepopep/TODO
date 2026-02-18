@@ -4,7 +4,7 @@ using TODO.Domain.Entities;
 
 namespace TODO.Application.Jwt.Factory;
 
-public interface IJwtTokenFactory
+public interface IAccessTokenFactory
 {
-    public string Create(ApplicationUser user);
+    public string Create(string id, string email);
 }
